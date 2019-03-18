@@ -26,6 +26,11 @@ export default class Menu extends React.Component {
         this.setState({ items: [res.data, ...items], showForm: false, })
       })
   }
+
+  deleteItem = (id) => {
+    const items = this.state.items.filter( item => item.id !== id )
+    this.setState({ items: items, })
+  }
   
   render() {
     const { name, } = this.props;
@@ -36,7 +41,7 @@ export default class Menu extends React.Component {
         <AddItem add={this.add}/>
         : 
         (<ul>
-          {this.state.items.map( item =>  <MenuItem key={item.id} {...item} /> )}
+          {this.state.items.map( item =>  <MenuItem key={item.id} {...item} deleteItem={this.deleteItem}/> )}
         </ul>)
         }
         <Button icon color="blue" size="tiny" onClick={this.toggleForm}>
