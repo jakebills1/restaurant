@@ -1,9 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import { Header } from 'semantic-ui-react';
+import { Header, Button, Icon } from 'semantic-ui-react';
 import MenuItem from './MenuItem';
+import AddItem from './AddItem';
 export default class Menu extends React.Component {
-  state = { items: [], };
+  state = { items: [], showForm : false, };
   componentDidMount() {
     axios.get(`/api/menus/${this.props.id}/items`)
       .then( res => {
@@ -13,14 +14,34 @@ export default class Menu extends React.Component {
         console.log(err);
       })
   }
+  
+  toggleForm = () => {
+    return this.setState({ showForm: !this.state.showForm, })
+  }
+
+  add = (item) => {
+    axios.post(`/api/menus/${this.props.id}/items`, item)
+      .then( res => {
+        const { items, } = this.state;
+        this.setState({ items: [res.data, ...items], showForm: false, })
+      })
+  }
+  
   render() {
     const { name, } = this.props;
     return (
       <div>
         <Header as="h3">{name}</Header>
-        <ul>
+        { this.state.showForm ? 
+        <AddItem add={this.add}/>
+        : 
+        (<ul>
           {this.state.items.map( item =>  <MenuItem key={item.id} {...item} /> )}
-        </ul>
+        </ul>)
+        }
+        <Button icon color="blue" size="tiny" onClick={this.toggleForm}>
+          {this.state.showForm ? <Icon name="minus square" size="large" /> : <Icon name="add square" size="large" />}
+        </Button>
       </div>
 
     )

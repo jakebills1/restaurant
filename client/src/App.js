@@ -17,7 +17,7 @@ class App extends Component {
   render() {
     return (
      <Container>
-       <Header as="h1">Diner on Rails</Header>
+       <Header as="h1" style={{textAlign: "center", }}>Diner on Rails</Header>
        <MenuList menus={this.state.menus}/>
      </Container>
     );
