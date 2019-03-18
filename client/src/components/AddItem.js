@@ -7,8 +7,21 @@ class AddItem extends React.Component {
   }
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.add(this.state)
+    if (this.props.id) {
+      this.props.edit({ id: this.props.id, ...this.state, })
+      this.props.toggleEdit()
+    } else {
+      this.props.add(this.state)
+    }
     this.setState({ name: "", price: undefined, description: "" })
+  }
+
+  componentDidMount() {
+    // test if props id exists
+    if (this.props.id) {
+      const { name, price, description, } = this.props;
+      this.setState({ name: name, price: price, description: description})
+    }
   }
   render() {
 

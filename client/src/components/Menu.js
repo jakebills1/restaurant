@@ -4,7 +4,7 @@ import { Header, Button, Icon } from 'semantic-ui-react';
 import MenuItem from './MenuItem';
 import AddItem from './AddItem';
 export default class Menu extends React.Component {
-  state = { items: [], showForm : false, };
+  state = { items: [], showForm : false, editing: false, editingItem: undefined, };
   componentDidMount() {
     axios.get(`/api/menus/${this.props.id}/items`)
       .then( res => {
@@ -16,7 +16,7 @@ export default class Menu extends React.Component {
   }
   
   toggleForm = () => {
-    return this.setState({ showForm: !this.state.showForm, })
+    this.setState({ showForm: !this.state.showForm, })
   }
 
   add = (item) => {
@@ -31,19 +31,36 @@ export default class Menu extends React.Component {
     const items = this.state.items.filter( item => item.id !== id )
     this.setState({ items: items, })
   }
+
+  toggleEdit = (id) => {
+    this.setState({ editing: !this.state.editing, editingItem: this.state.items.filter( item => item.id === id ) })
+  }
+
+  edit = (editedItem) => {
+    const items =  this.state.items.map( item => {
+      if (item.id === editedItem.id)
+        return editedItem
+      return item
+    })
+    this.setState({ items, })
+  }
   
   render() {
     const { name, } = this.props;
     return (
       <div>
         <Header as="h3">{name}</Header>
-        { this.state.showForm ? 
+        {this.state.editing ? <AddItem {...this.state.editingItem[0]} edit={this.edit} toggleEdit={this.toggleEdit}/> 
+        :
+        this.state.showForm ? 
         <AddItem add={this.add}/>
         : 
         (<ul>
-          {this.state.items.map( item =>  <MenuItem key={item.id} {...item} deleteItem={this.deleteItem}/> )}
+          {this.state.items.map( item =>  <MenuItem key={item.id} {...item} deleteItem={this.deleteItem} toggleEdit={this.toggleEdit}/> )}
         </ul>)
         }
+         
+        
         <Button icon color="blue" size="tiny" onClick={this.toggleForm}>
           {this.state.showForm ? <Icon name="minus square" size="large" /> : <Icon name="add square" size="large" />}
         </Button>
